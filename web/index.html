@@ -12,18 +12,28 @@
 </head>
 <body ng-app="matera" ng-controller="EventController" id="page">
     <nav class="navbar navbar-dark bg-primary">
-      <a class="navbar-brand" href="#">Área do Professor | Educa+</a>
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Aulas
+        <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="#" ng-click="showClassWithNoTeacher()">Sem Professor</a></li>
+          <li><a href="#" ng-click="showAllEvents()">Todas</a></li>
+          <li><a href="#" ng-click="showMyClasses()">Minhas Aulas</a></li>
+        </ul>
+      </div>
+      <a class="navbar-brand" href="#"><b>Área do Professor | Educa+</b></a>
       <form class="navbar-form navbar-left">
         <button id="authorize-button" style="display: none;">Entrar</button>
         <button id="signout-button" style="display: none;">Sair</button>
       </form>
     </nav>
 
-    <div style="padding: 15px;">
-
-      <div class="card col-sm-3" ng-repeat="event in events track by $index" style="box-shadow: 3px 3px grey;">
+    <div style="padding: 15px">
+      <div class="card col-sm-3" ng-repeat="event in events track by $index" style="box-shadow: 3px 3px grey; float: left; margin: 15px;">
         <div class="card-body">
             <h4 class="card-title">Aula Educa+</h4>
+            <h4 ng-show="event.teacher != null">Professor: {{event.teacher}}</h4>
+            <h4 ng-show="event.teacher == null" style="color: red;">Sem Professor!</h4>
             <h4>Dia {{!event.start.dateTime ? event.start.date : event.start.dateTime | date:'dd/MM/yyyy'}} às {{!event.start.dateTime ? event.start.date : event.start.dateTime | date:'HH:mm'}}h</h4>
             <p class="card-text">{{event.summary}}</p>
             <a ng-click="eventDetails(event)" class="btn btn-primary" data-toggle="eventDetailsModal" data-target="#eventDetailsModal">Informações</a>
@@ -106,7 +116,6 @@
               updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
               authorizeButton.onclick = handleAuthClick;
               signoutButton.onclick = handleSignoutClick;
-              createButton.onclick = createEvent;
           });
         }
 
@@ -127,6 +136,7 @@
 
         function handleSignoutClick(event) {
           gapi.auth2.getAuthInstance().signOut();
+          angular.element(document.getElementById('page')).scope().signOut();
         }
     </script>
 
