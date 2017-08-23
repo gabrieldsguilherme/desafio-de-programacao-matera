@@ -20,19 +20,7 @@ app.controller('EventController', function($scope) {
             'orderBy': 'startTime'
         }).then(function(response) {
         	let eventList = response.result.items;
-        	let events = eventList.filter(checkClass);
-
-        	for (var i = 0; i < events.length; i++) {
-        		if (events[i].attendees !== undefined) {
-        			for (var j = 0; j < events[i].attendees.length; j++) {
-		        		if (events[i].attendees[j].responseStatus == 'accepted') {
-		        			events[i].teacher = events[i].attendees[j].displayName;
-		        			break;
-		        		}
-		        	}
-	        	}
-        	}
-
+        	let events = setTeacher(eventList.filter(checkClass));
 			$scope.events = events;
             $scope.$apply();
         });
@@ -88,6 +76,26 @@ app.controller('EventController', function($scope) {
         });
 	};
 
+	$scope.getPreviousClasses = function() {
+		let dateMin = new Date();
+		dateMin.setDate(dateMin.getDate() - 365);
+
+	   	gapi.client.calendar.events.list({
+			'calendarId': 'primary',
+            'timeMin': (dateMin).toISOString(),
+            'timeMax': (new Date()).toISOString(),
+            'showDeleted': false,
+            'singleEvents': true,
+            'maxResults': 200000000,
+            'orderBy': 'startTime'
+        }).then(function(response) {
+        	let eventList = response.result.items;
+        	let events = setTeacher(eventList.filter(checkClass));
+        	$scope.events = events;
+            $scope.$apply();
+        });
+	}
+
 	$scope.eventDetails = function(event) {
 		$scope.event = event;
 		$('#eventDetailsModal').modal('show');
@@ -103,6 +111,11 @@ app.controller('EventController', function($scope) {
 		$('#editDescriptionModal').modal('show');
 	}
 
+	$scope.assignTeacher = function(event) {
+		$scope.event = event;
+		$('#assignTeacherModal').modal('show');
+	}
+
 	$scope.updateEvent = function(event) {
 		gapi.client.calendar.events.update({
 			'calendarId': 'primary',
@@ -110,24 +123,59 @@ app.controller('EventController', function($scope) {
 			'resource': event
 		}).then(function(response) {
 			$('#editDescriptionModal').modal('hide');
+			$('#assignTeacherModal').modal('hide');
 		});
 	}
 
-	$scope.showClassWithNoTeacher = function(event) {
-		$scope.getEventsWithNoTeacher();
+	$scope.confirmationAssignTeacher = function(event) {
+		let auth2 = gapi.auth2.getAuthInstance();
+		if (auth2.isSignedIn.get()) {
+			var loggedEmail = auth2.currentUser.get().getBasicProfile().getEmail();
+		}
+
+		console.log(event);
+
+		for (var i = 0; i < event.attendees.length; i++) {
+			if (event.attendees[i].email == loggedEmail) {
+				event.attendees[i].responseStatus = 'accepted';
+				break;
+			}
+		}
+		$scope.updateEvent(event);
+		$('#assignTeacherModal').modal('hide');
+		showAlertSuccess("Evento atualizado!", "Você foi alocado como professor", true);
 	}
 
-	$scope.showAllEvents = function(event) {
+	$scope.confirmationEditDescription = function(event) {
+		$scope.updateEvent(event);
+		showAlertSuccess("Evento atualizado!", "O diário de classe foi atualizado", false);	
+	}
+
+	$scope.start = function() {
+		let auth2 = gapi.auth2.getAuthInstance();
+		if (auth2.isSignedIn.get()) {
+			$scope.loggedUser = auth2.currentUser.get().getBasicProfile().getName();
+		}
 		$scope.getAllEvents();
-	}
-
-	$scope.showMyClasses = function(event) {
-		$scope.getMyEvents();
 	}
 
 	$scope.signOut = function() {
 		$scope.signOut = true;
 		$scope.events = [];
+	}
+
+	function showAlertSuccess(title, text, reload) {
+		swal({
+		  title: title,
+		  text: text,
+		  type: "success",
+		  confirmButtonText: "Ok",
+		  closeOnConfirm: true
+		}, function() {
+			if (reload) {
+		  	  location.reload();
+		  	}
+		});
 	}
 
 	function checkClass(event) {
@@ -164,6 +212,20 @@ app.controller('EventController', function($scope) {
 			}
 			return false;
 		}
+	}
+
+	function setTeacher(events) {
+		for (var i = 0; i < events.length; i++) {
+    		if (events[i].attendees !== undefined) {
+    			for (var j = 0; j < events[i].attendees.length; j++) {
+	        		if (events[i].attendees[j].responseStatus == 'accepted') {
+	        			events[i].teacher = events[i].attendees[j].displayName;
+	        			break;
+	        		}
+	        	}
+        	}
+    	}
+    	return events;
 	}
 
 });
