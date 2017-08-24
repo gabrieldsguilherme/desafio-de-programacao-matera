@@ -34,19 +34,22 @@
       </div>
       <div class="card-block">
         <div style="padding: 15px">
-          <div class="card" ng-repeat="event in events track by $index" style="box-shadow: 7px 7px 15px #c4c4c4; float: left; margin: 15px;">
+          <div class="card" ng-repeat="event in events track by $index" ng-show="events.length > 0" style="box-shadow: 7px 7px 15px #c4c4c4; float: left; margin: 15px;">
             <h5 class="card-header">Aula Educa+</h5>
             <div class="card-body">
                 <h5 class="card-text">{{event.summary}}</h5>
                 <p class="card-text">Dia <b>{{!event.start.dateTime ? event.start.date : event.start.dateTime | date:'dd/MM/yyyy'}}</b> às <b>{{!event.start.dateTime ? event.start.date : event.start.dateTime | date:'HH:mm'}}h</b></p>
-                <a ng-click="eventDetails(event)" class="btn btn-info" data-toggle="eventDetailsModal" data-target="#eventDetailsModal" style="box-shadow: 5px 5px 7px #c4c4c4;">Informações</a>
-                <a ng-click="editDescription(event)" class="btn btn-info" data-toggle="editDescriptionModal" data-target="#editDescriptionModal" style="box-shadow: 5px 5px 7px #c4c4c4;">Editar Diário</a>
+                <a ng-click="eventDetails(event)" class="btn btn-info" data-toggle="eventDetailsModal" data-target="#eventDetailsModal" style="box-shadow: 5px 5px 7px #c4c4c4;" id="card-event-button">Informações</a>
+                <a ng-click="editDescription(event)" class="btn btn-info" data-toggle="editDescriptionModal" data-target="#editDescriptionModal" style="box-shadow: 5px 5px 7px #c4c4c4;" id="card-event-button">Editar Diário</a>
             </div>
             <div class="card-footer text-muted">
               <span ng-show="event.teacher != null">Professor: {{event.teacher}}</span>
               <b ng-show="event.teacher == null" style="color: red;">Sem Professor!</b>
               <a href="#" ng-show="event.teacher == null" style="color: black;" ng-click="assignTeacher(event)" data-toggle="assignTeacherModal" data-target="#assignTeacherModal">(Alocar-me)</a>
             </div>
+          </div>
+          <div ng-show="events.length < 1">
+            <center><h3 style="color: grey; margin-top: 40px;">Nenhuma aula encontrada.</h3></center>
           </div>
         </div>
       </div>

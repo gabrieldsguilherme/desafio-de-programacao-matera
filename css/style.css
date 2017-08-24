@@ -61,11 +61,14 @@ h1.textoLogin {
 #signout-button:active{
   box-shadow: 1px 1px 5px #c4c4c4;
   position: relative;
-  top: 1px;
+  top: 2px;
 }
 
-
-
+#card-event-button:active{
+  box-shadow: 1px 1px 5px #c4c4c4;
+  position: relative;
+  top: 2px;
+}
 
 @-moz-keyframes wrong-log {
   0%, 100% {
