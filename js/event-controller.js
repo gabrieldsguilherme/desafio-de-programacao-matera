@@ -155,13 +155,14 @@ app.controller('EventController', function($scope) {
 		let auth2 = gapi.auth2.getAuthInstance();
 		if (auth2.isSignedIn.get()) {
 			$scope.loggedUser = auth2.currentUser.get().getBasicProfile().getName();
+			$scope.getAllEvents();
 		}
-		$scope.getAllEvents();
 	}
 
 	$scope.signOut = function() {
 		$scope.signOut = true;
 		$scope.events = [];
+		window.location.href = "index.html";
 	}
 
 	function showAlertSuccess(title, text, reload) {
