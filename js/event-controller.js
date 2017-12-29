@@ -16,7 +16,7 @@ app.controller('EventController', function($scope) {
             'timeMax': (dateMax).toISOString(),
             'showDeleted': false,
             'singleEvents': true,
-            'maxResults': 200000000,
+            'maxResults': 200,
             'orderBy': 'startTime'
         }).then(function(response) {
         	let eventList = response.result.items;
@@ -39,7 +39,7 @@ app.controller('EventController', function($scope) {
             'timeMax': (dateMax).toISOString(),
             'showDeleted': false,
             'singleEvents': true,
-            'maxResults': 200000000,
+            'maxResults': 200,
             'orderBy': 'startTime'
         }).then(function(response) {
         	let eventList = response.result.items;
@@ -61,7 +61,7 @@ app.controller('EventController', function($scope) {
             'timeMax': (dateMax).toISOString(),
             'showDeleted': false,
             'singleEvents': true,
-            'maxResults': 200000000,
+            'maxResults': 200,
             'orderBy': 'startTime'
         }).then(function(response) {
         	let eventList = response.result.items;
@@ -86,7 +86,7 @@ app.controller('EventController', function($scope) {
             'timeMax': (new Date()).toISOString(),
             'showDeleted': false,
             'singleEvents': true,
-            'maxResults': 200000000,
+            'maxResults': 200,
             'orderBy': 'startTime'
         }).then(function(response) {
         	let eventList = response.result.items;
